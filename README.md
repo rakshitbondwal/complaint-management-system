@@ -1,22 +1,34 @@
 # Complaint Command — AI-Powered Customer Complaint Management System
 
-Built for the AIVOA Round 1 AI Product Engineer assignment. Pharma (API/FDF) customer
-complaint intake → AI extraction → completeness check → risk classification → duplicate
-detection → root cause (6M fishbone) → CAPA recommendation → summary, surfaced through
-a "Log Customer Complaint" form and an "AI Copilot Risk Assessment" panel.
+An advanced AI-driven Quality Management System (QMS) intake, triage, and CAPA assistant tailored for pharmaceutical (API/FDF) manufacturing. Complaint Command automates the path from unstructured intake (emails, PDFs, text) to structured, compliant QMS logs with human-in-the-loop validation.
 
-## Stack
+---
 
-| Layer | Tech |
+## Key Features
+
+- **Automated AI Extraction**: Automatically parses customer name, product, batch number, date, and core issue summary.
+- **Completeness Checker**: Calculates a completeness percentage based on regulatory and QMS requirements, highlighting missing fields.
+- **AI Risk Classification**: Triages severity (Critical, Major, or Minor) using standard pharma QMS severity guidelines, complete with written justifications.
+- **Duplicate Complaint Detection**: Matches incoming complaints against historical records using TF-IDF cosine similarity to flag potential batch-specific clusters.
+- **Root Cause Recommendation (6M)**: Analyzes text using the 6M Fishbone framework (Man, Machine, Material, Method, Measurement, Environment) to output likelihoods and QA reasoning.
+- **CAPA Recommendation**: Recommends immediate corrective actions and preventive actions based on risk and root cause.
+- **Executive Summarization**: Drafts a concise 3-4 sentence summary suitable for QA review dashboards.
+
+---
+
+## Technology Stack
+
+| Layer | Technology |
 |---|---|
-| Frontend | React 18 + Redux Toolkit + Vite |
-| Backend | Python + FastAPI |
-| AI Agent Orchestration | LangGraph |
-| LLM | Groq — `gemma2-9b-it` (fallback `llama-3.3-70b-versatile`) |
-| Database | PostgreSQL (SQLAlchemy ORM — MySQL is a one-line swap, see below) |
-| Font | Google Inter / Inter Tight |
+| **Frontend** | React 18 + Redux Toolkit + Vite + Vanilla CSS |
+| **Backend** | Python + FastAPI |
+| **Orchestration** | LangGraph (StateGraph Workflow) |
+| **LLMs** | Groq (`gemma2-9b-it` & `llama-3.3-70b-versatile` fallback) |
+| **Database** | PostgreSQL (SQLAlchemy ORM) |
 
-## Repo layout
+---
+
+## Project Structure
 
 ```
 complaint-management-system/
@@ -30,138 +42,93 @@ complaint-management-system/
 │   │   ├── routers/complaints.py API endpoints
 │   │   ├── agents/
 │   │   │   ├── state.py          LangGraph shared state (TypedDict)
-│   │   │   ├── nodes.py          each AI step as a graph node
-│   │   │   └── graph.py          StateGraph wiring + entrypoint fn
+│   │   │   ├── nodes.py          AI processing graph nodes
+│   │   │   └── graph.py          StateGraph wiring & execution entrypoint
 │   │   └── services/
 │   │       ├── groq_client.py        Groq chat + JSON-mode helper
 │   │       ├── document_parser.py    PDF/email/text extraction
 │   │       └── duplicate_detector.py TF-IDF cosine similarity
 │   ├── requirements.txt
-│   └── .env.example
+│   └── Dockerfile
 ├── frontend/
 │   ├── src/
 │   │   ├── main.jsx / App.jsx
-│   │   ├── store/                Redux slice + store
-│   │   ├── api/client.js         axios instance
+│   │   ├── store/                Redux state management
+│   │   ├── api/client.js         Axios client
 │   │   ├── components/           FileUpload, ComplaintForm, AICopilotPanel, ComplaintList
-│   │   └── styles/index.css
+│   │   └── styles/index.css      Vanilla CSS styling
 │   ├── index.html
 │   ├── vite.config.js
 │   └── package.json
-└── sample-complaints/            demo input files (email/text, incl. a duplicate pair)
+├── sample-complaints/            Sample input files for testing (emails & texts)
+└── render.yaml                   Render Blueprint file for deployment
 ```
 
-## How the AI pipeline works (LangGraph)
+---
 
-`backend/app/agents/graph.py` wires seven nodes into a linear `StateGraph`:
-
-```
-extract_complaint_data → completeness_checker → risk_classification
-→ duplicate_detection → root_cause_recommendation → capa_recommendation
-→ complaint_summary → END
-```
-
-Each node reads/writes a shared `ComplaintState` TypedDict. The extraction, risk,
-root-cause, CAPA, and summary nodes call Groq's `gemma2-9b-it` via
-`services/groq_client.chat_json`, which forces JSON-only output and retries once on
-`llama-3.3-70b-versatile` if the smaller model returns malformed JSON. Duplicate
-detection deliberately uses TF-IDF + cosine similarity against complaints already in
-Postgres (no external vector DB needed) — fast, explainable, and enough for the demo
-scope.
-
-## 1. Environment setup
-
-### Install VS Code + extensions
-1. Install [VS Code](https://code.visualstudio.com/).
-2. Install extensions: **Python** (ms-python.python), **Pylance**, **ES7+ React/Redux
-   snippets**, **Prettier**, and optionally **Thunder Client** (for testing the API).
-3. Open the `complaint-management-system` folder as your VS Code workspace
-   (`code complaint-management-system`).
+## Getting Started
 
 ### Prerequisites
+
 - Python 3.11+
 - Node.js 18+ and npm
-- PostgreSQL 14+ running locally (or use Docker — see below)
-- A free Groq API key: https://console.groq.com/keys
+- PostgreSQL running locally (or via Docker)
+- A Groq API Key
 
-### Backend setup
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+### Backend Setup
 
-cp .env.example .env
-# edit .env: paste your GROQ_API_KEY, set DATABASE_URL
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   # On macOS/Linux:
+   source venv/bin/activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Configure environment variables. Copy `.env.example` to `.env` and fill in your keys:
+   ```bash
+   cp .env.example .env
+   ```
+5. Start the FastAPI server:
+   ```bash
+   uvicorn app.main:app --reload --port 8000
+   ```
+   The backend will be running at `http://localhost:8000`. You can inspect the interactive API documentation at `http://localhost:8000/docs`.
 
-# create the database (psql example)
-createdb complaints_db
+### Frontend Setup
 
-uvicorn app.main:app --reload --port 8000
-```
-Backend now runs at `http://localhost:8000`. Interactive API docs at
-`http://localhost:8000/docs`.
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   The frontend will be running at `http://localhost:5173`.
 
-**Using MySQL instead of Postgres:** install `pip install pymysql` instead of
-`psycopg2-binary`, and set `DATABASE_URL=mysql+pymysql://user:pass@localhost:3306/complaints_db`
-in `.env`. Nothing else changes — SQLAlchemy abstracts the rest.
+---
 
-**No local Postgres? Quick Docker option:**
-```bash
-docker run --name complaints-pg -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=complaints_db -p 5432:5432 -d postgres:16
-```
+## Production Deployment (Render)
 
-### Frontend setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Frontend runs at `http://localhost:5173` and calls the backend at
-`http://localhost:8000` (override with a `VITE_API_BASE_URL` env var if needed).
+This repository includes a `render.yaml` Blueprint to quickly deploy the frontend, backend, and database to **Render**.
 
-## 2. Demo workflow (for your walkthrough video)
-
-1. Start backend (`uvicorn ...`) and frontend (`npm run dev`).
-2. Open `http://localhost:5173`.
-3. In the **Intake** panel, paste text from `sample-complaints/complaint_critical_email.txt`
-   (or upload it as a `.txt`/`.pdf`) and click **Run AI Analysis**.
-4. Watch the **Log Customer Complaint** form auto-populate (customer, product, batch,
-   date) and the **AI Copilot Risk Assessment** panel show: risk tier + justification,
-   completeness %, missing fields, root cause (6M), CAPA recommendation, and summary.
-5. Click **Log Complaint** to persist it.
-6. Paste `complaint_duplicate_test.txt` next — it references the same batch as the
-   first complaint, so the AI Copilot should flag it as a likely duplicate.
-7. Try `complaint_minor_manual.txt` to show a Minor-risk classification (packaging
-   issue, no safety impact) for contrast against the Critical one.
-
-For your code walkthrough video, trace one request end-to-end:
-`FileUpload.jsx` → `analyzeComplaintText` thunk (`complaintsSlice.js`) → axios POST
-`/api/complaints/analyze/text` → `routers/complaints.py` →
-`agents/graph.run_complaint_pipeline` → each node in `agents/nodes.py` → response
-shape in `schemas.py` → Redux `applyAnalysis` reducer → `ComplaintForm.jsx` /
-`AICopilotPanel.jsx` re-render.
-
-## 3. Bonus AI features implemented
-
-- **Complaint Completeness Checker** — flags missing mandatory fields, shown as a %
-  meter in the AI Copilot panel.
-- **AI Risk Classification** — Critical / Major / Minor per standard QMS severity
-  conventions, with a written justification.
-- **Duplicate Complaint Detection** — TF-IDF cosine similarity against previously
-  logged complaints.
-- **Root Cause Recommendation** — 6M fishbone (Man/Machine/Material/Method/
-  Measurement/Environment) categories with likelihood + reasoning.
-- **CAPA Recommendation** — drafted corrective + preventive action plan.
-- **Complaint Summary** — QA-dashboard-ready executive summary.
-
-## Notes on scope
-
-- OCR/document parsing uses `pypdf` text extraction — good enough for text-based PDFs,
-  not scanned-image OCR (explicitly out of scope per the assignment brief).
-- No Alembic migrations — `Base.metadata.create_all()` creates tables on first run,
-  which is appropriate for an assignment-scope project.
-- Every field extracted by the LLM is shown in an editable form field before saving,
-  so a human QA reviewer always confirms before it's logged — matching how the demo
-  video's "Log Customer Complaint" step behaves as a human-in-the-loop checkpoint.
+1. Go to your **Render Dashboard** -> click **New +** -> **Blueprint**.
+2. Connect your GitHub repository.
+3. Supply the following environment variables when prompted:
+   - `GROQ_API_KEY`: Your Groq API Key.
+   - `VITE_API_BASE_URL`: The public URL of your backend web service (e.g. `https://your-backend.onrender.com`).
+   - `FRONTEND_ORIGIN`: The public URL of your frontend static site (e.g. `https://your-frontend.onrender.com`).
+4. Click **Apply** to deploy the services.
