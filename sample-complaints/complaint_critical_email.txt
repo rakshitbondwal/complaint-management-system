@@ -1,0 +1,27 @@
+From: qa.manager@meridianpharma.com
+To: complaints@aivoa-client.com
+Subject: URGENT - Foreign particulate found in Metformin HCl API batch
+
+Hello,
+
+We are writing to report a serious quality issue identified during incoming inspection
+at our finished dosage form facility.
+
+Customer/Site: Meridian Pharmaceuticals Inc.
+Product: Metformin Hydrochloride API
+Batch Number: MET-API-2291
+Date Observed: 2026-07-22
+
+During visual inspection of the received drums, our QC team identified dark fibrous
+particulate matter embedded within the crystalline powder in 2 of 15 drums. Initial
+microscopy suggests the contaminant may be organic fiber, possibly from filtration
+media. Given this material is intended for oral solid dosage manufacturing, we consider
+this a potential patient safety issue and are placing the entire batch on hold pending
+your investigation.
+
+Please treat this as high priority and advise on root cause and corrective action at
+your earliest opportunity.
+
+Regards,
+Priya Nair
+QA Manager, Meridian Pharmaceuticals

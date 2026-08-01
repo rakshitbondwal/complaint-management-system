@@ -1,0 +1,16 @@
+CUSTOMER COMPLAINT FORM (source text used to generate demo PDF)
+
+Customer: Zenith Formulations Ltd.
+Product Name: Atorvastatin Calcium Tablets 20mg
+Batch Number: ATV-FDF-0817
+Complaint Date: 12 July 2026
+
+Description:
+During routine dissolution testing at our site, tablets from the above batch showed
+dissolution results of 68% at 30 minutes against a specification of not less than 80%.
+Three additional tablets were tested with similar out-of-specification results. No
+visual defects were observed. This appears to be a formulation or manufacturing process
+deviation rather than a safety issue, but it does affect product efficacy and GMP
+compliance, so we are logging it as a quality complaint pending your investigation.
+
+Submitted by: R. Fernandes, QC Supervisor
