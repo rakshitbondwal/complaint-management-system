@@ -2,7 +2,7 @@ services:
   # Backend FastAPI Service
   - type: web
     name: complaint-backend
-    env: docker
+    runtime: docker
     rootDir: backend
     dockerfilePath: Dockerfile
     plan: free
@@ -25,11 +25,10 @@ services:
   # Frontend Vite React Service
   - type: web
     name: complaint-frontend
-    env: static
+    runtime: static
     rootDir: frontend
-    buildCommand: npm run build
-    publishDir: dist
-    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_BASE_URL
         fromService:
