@@ -1,0 +1,41 @@
+services:
+  # Backend FastAPI Service
+  - type: web
+    name: complaint-backend
+    env: docker
+    rootDir: backend
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: complaint-db
+          property: connectionString
+      - key: GROQ_API_KEY
+        sync: false # Set this in Render UI after creating the blueprint
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-20b
+      - key: GROQ_FALLBACK_MODEL
+        value: openai/gpt-oss-120b
+      - key: FRONTEND_ORIGIN
+        fromService:
+          name: complaint-frontend
+          property: url
+
+  # Frontend Vite React Service
+  - type: web
+    name: complaint-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm run build
+    publishDir: dist
+    plan: free
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          name: complaint-backend
+          property: url
+
+databases:
+  - name: complaint-db
+    plan: free
