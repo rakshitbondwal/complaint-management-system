@@ -12,15 +12,13 @@ services:
           name: complaint-db
           property: connectionString
       - key: GROQ_API_KEY
-        sync: false # Set this in Render UI after creating the blueprint
+        sync: false # Set this to your Groq API Key in Render UI
       - key: GROQ_MODEL
         value: openai/gpt-oss-20b
       - key: GROQ_FALLBACK_MODEL
         value: openai/gpt-oss-120b
       - key: FRONTEND_ORIGIN
-        fromService:
-          name: complaint-frontend
-          property: url
+        sync: false # Set this to the public URL of your frontend once deployed (or use http://localhost:5173 for local)
 
   # Frontend Vite React Service
   - type: web
@@ -31,9 +29,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_BASE_URL
-        fromService:
-          name: complaint-backend
-          property: url
+        sync: false # Set this to the public URL of your backend (e.g. https://complaint-backend.onrender.com)
 
 databases:
   - name: complaint-db
