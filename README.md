@@ -2,6 +2,7 @@
 
 An advanced AI-driven Quality Management System (QMS) intake, triage, and CAPA assistant tailored for pharmaceutical (API/FDF) manufacturing. Complaint Command automates the path from unstructured intake (emails, PDFs, text) to structured, compliant QMS logs with human-in-the-loop validation.
 
+## 🔗 Live Application: [complaint-frontend-gfa9.onrender.com](https://complaint-frontend-gfa9.onrender.com)
 ---
 
 ## Key Features
